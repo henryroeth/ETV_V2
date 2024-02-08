@@ -1,4 +1,4 @@
-package main;
+package graphical_components;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
+
+import main.Main;
 
 public class Overlay {
 	
@@ -25,7 +27,8 @@ public class Overlay {
 	}
 	
 	public void draw(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g; // recovers Graphics2D
+		// recovers Graphics2D
+		Graphics2D g2 = (Graphics2D) g; 
 		
 		// creates the border
 		int offset = 32;

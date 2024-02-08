@@ -13,7 +13,10 @@ import javax.swing.Timer;
 
 import entities.Asteroid;
 import entities.Spaceship;
-import entities.Star;
+import graphical_components.Overlay;
+import graphical_components.Portal;
+import graphical_components.Star;
+import graphical_components.StartScreen;
 
 public class Component extends JComponent implements KeyListener, ActionListener {
 	
@@ -29,6 +32,8 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	
 	private final int ASTEROID_HEIGHT = 113;
 	
+	private boolean isLooping;
+	
 	private ArrayList<Star> stars = new ArrayList<Star>();
 	
 	private ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
@@ -39,9 +44,13 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	
 	private Overlay overlay;
 	
-	private Background background;
+	private Portal portal;
+	
+	private StartScreen startScreen;
 
 	public Component() {
+		// initializes game state
+		isLooping = false;
 		// sets up the spaceship 
 		Timer t = new Timer(10, this);
 		addKeyListener(this);
@@ -50,12 +59,15 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		t.start();
 		
 		// creates the background
-		background = new Background(0, 0);
+		portal = new Portal(0, 0);
 		
-		// procedurally generates stars for a parallax effect
+		// creates the start screen
+		startScreen = new StartScreen(0, 0);
+		
+		// procedurally initializes stars for a parallax effect to be implemented
 		int verticalCounter = -16;
 		int diameter = 5;
-		for(int i = 0; i < 13; i++) {
+		for(int i = 0; i < Main.WINSIZE / 64; i++) {
 			for(int j = 16; j <= Main.WINSIZE; j += 32) {
 				newStar = new Star(j + Math.random() * 32, Math.random() * 32 + verticalCounter, diameter);
 				stars.add(newStar);
@@ -63,7 +75,8 @@ public class Component extends JComponent implements KeyListener, ActionListener
 			verticalCounter += 64;
 		}
 		
-		int xPos = Main.WINSIZE + ASTEROID_WIDTH;
+		// initializes the asteroids
+		int xPos = (Main.WINSIZE * 2) + ASTEROID_WIDTH;
 		for(int i = 0; i < NUM_ASTEROIDS; i++) {
 			newAsteroid = new Asteroid(xPos, (Math.random() * Main.WINSIZE - ASTEROID_HEIGHT) + ASTEROID_HEIGHT, ASTEROID_WIDTH, ASTEROID_HEIGHT);
 			asteroids.add(newAsteroid);
@@ -72,24 +85,6 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		
 		// creates the overlay
 		overlay = new Overlay(0, 0);
-	}
-	
-	public void update(long diff) {
-		// updates the location of the stars
-		for(int i = 0; i < stars.size(); i++) {
-			stars.get(i).update(diff);
-			if(stars.get(i).getX() < -5) {
-				stars.get(i).setX(Main.WINSIZE + 5);
-			}
-		}
-		// updates the location of the asteroids
-		for(int i = 0; i < asteroids.size(); i++) {
-			asteroids.get(i).update(diff);
-			if(asteroids.get(i).getX() < -ASTEROID_WIDTH) {
-				asteroids.get(i).setX(Main.WINSIZE + ASTEROID_WIDTH);
-				asteroids.get(i).setY((int)(Math.random() * Main.WINSIZE - ASTEROID_WIDTH));
-			}
-		}
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -106,7 +101,7 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		}
 		
 		// draws the background 
-		background.draw(g2);
+		portal.draw(g2);
 		
 		// draws the spaceship
 		spaceship.draw(g2); 
@@ -116,11 +111,35 @@ public class Component extends JComponent implements KeyListener, ActionListener
 			asteroids.get(i).draw(g2);
 		}
 		
+		// draws the start screen
+		startScreen.draw(g2);
+		
 		// draws the game overlay
 		overlay.draw(g2);
 	}
 	
-	public boolean asteroidCollision() {
+	public void update(long diff) {
+		if(asteroidCollision()) isLooping = false;
+		if(isLooping) {
+			// updates the location of the stars
+			for(int i = 0; i < stars.size(); i++) {
+				stars.get(i).update(diff);
+				if(stars.get(i).getX() < -5) {
+					stars.get(i).setX(Main.WINSIZE + 5);
+				}
+			}
+			// updates the location of the asteroids
+			for(int i = 0; i < asteroids.size(); i++) {
+				asteroids.get(i).update(diff);
+				if(asteroids.get(i).getX() < -ASTEROID_WIDTH) {
+					asteroids.get(i).setX(Main.WINSIZE + ASTEROID_WIDTH);
+					asteroids.get(i).setY((int)(Math.random() * Main.WINSIZE - ASTEROID_WIDTH));
+				}
+			}
+		}
+	}
+	
+	private boolean asteroidCollision() {
 		boolean collided = false;
 		for(int i = 0; i < asteroids.size(); i++) {
 			if(spaceship.getHitBox().intersects(asteroids.get(i).getHitBox())) {
@@ -130,6 +149,8 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		}
 		return collided;
 	}
+	
+	public boolean isLooping() {return isLooping;}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -146,17 +167,28 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 			case KeyEvent.VK_UP:
-				spaceship.setDy(-(SPACESHIP_SPEED));
+				if(isLooping) spaceship.setDy(-(SPACESHIP_SPEED));
 				break;
 			case KeyEvent.VK_LEFT:
-				spaceship.setDx(-(SPACESHIP_SPEED));
+				if(isLooping) spaceship.setDx(-(SPACESHIP_SPEED));
 				break;
 			case KeyEvent.VK_DOWN:
-				spaceship.setDy(SPACESHIP_SPEED);
+				if(isLooping) spaceship.setDy(SPACESHIP_SPEED);
 				break;
 			case KeyEvent.VK_RIGHT:
-				spaceship.setDx(SPACESHIP_SPEED);
+				if(isLooping) spaceship.setDx(SPACESHIP_SPEED);
 				break;
+			case KeyEvent.VK_ENTER:
+				isLooping = true;
+				break;
+			case KeyEvent.VK_ESCAPE:
+				if(!asteroidCollision() && isLooping) {
+					isLooping = false;
+					Main.SOUND.stop();
+				} else {
+					isLooping = true;
+					Main.SOUND.play();
+				}
 		}
 	}
 

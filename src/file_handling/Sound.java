@@ -10,25 +10,37 @@ import javax.sound.sampled.Clip;
  *
  */
 public class Sound {
-	/**
-	 * Method to play the the wav file from the specified file path that is to be fed into the method.
-	 * @param musicLocation The file path of the wav file.
-	 */
-	public void playMusic(String musicLocation) {
+
+	private File path;
+	
+	private Clip clip;
+	
+	public Sound(String path) {
 		try {
-			File filePath=new File(musicLocation);
-			if(filePath.exists()) {
-					filePath.setExecutable(true);
-					AudioInputStream audioInput=AudioSystem.getAudioInputStream(filePath);
-					Clip clip=AudioSystem.getClip();
-					clip.open(audioInput);
-					clip.start();
-					clip.loop(Clip.LOOP_CONTINUOUSLY);
+			this.path = new File(path);
+			if(this.path.exists()) {
+				this.path.setExecutable(true);
+				AudioInputStream audioInput=AudioSystem.getAudioInputStream(this.path);
+				clip=AudioSystem.getClip();
+				clip.open(audioInput);
 			} else {
-				System.out.println("Error");
+				System.out.println("Error!");
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void play() {
+		try {
+			clip.start();
+			clip.loop(Clip.LOOP_CONTINUOUSLY);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void stop() {
+		clip.stop();
 	}
 }

@@ -48,22 +48,22 @@ public class Spaceship extends JComponent{
 		// recovers Graphics2D
 		Graphics2D g2 = (Graphics2D) g;
 		
-		// draws the image
+		// scales the the instance of the image and draws it
 		g2.drawImage(spaceship.getScaledInstance(width, height, Image.SCALE_DEFAULT), x - width / 3 + 5, y - height / 3 + 5, null);
-		g2.draw(rect);
 	}
 	
 	public void update() {
-		if(x >= Main.WINSIZE - width) {
-			x = Main.WINSIZE - width;
+		// moves the spaceship within the window's boundaries boundaries
+		if(x >= Main.WINSIZE - width / 3) {
+			x = Main.WINSIZE - width / 3;
 			x += dx;
 			rect.x = x;
 		} else {
 			x += dx;
 			rect.x = x;
 		}
-		if(y >= Main.WINSIZE - height - 36) {
-			y = Main.WINSIZE - height - 36;
+		if(y >= Main.WINSIZE - height) {
+			y = Main.WINSIZE - height;
 			y += dy;
 		} else {
 			y += dy;

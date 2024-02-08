@@ -1,4 +1,4 @@
-package main;
+package graphical_components;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,7 +8,9 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-public class Background {
+import main.Main;
+
+public class Portal {
 	
 	private int x;
 	
@@ -20,7 +22,7 @@ public class Background {
 	
 	private int height = 320;
 	
-	public Background(int x, int y) {
+	public Portal(int x, int y) {
 		this.x = x;
 		this.y = y;
 		try {

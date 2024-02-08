@@ -8,9 +8,11 @@ public class Main {
 	
 	public static final int DELAY = 1;
 	
-	public static final int WINSIZE = 800;
+	public static final int WINSIZE = 1000;
 	
 	public static final String TITLE = "Escape The Void!";
+	
+	public static final Sound SOUND = new Sound("sounds/bg_music.wav");
 	
 	public static void main(String[] args) {
 		// initializes the frame 
@@ -28,28 +30,29 @@ public class Main {
 		frame.add(component);
 		frame.setVisible(true);
 		
-		// initiates the game loop
-		Sound sound = new Sound();
-		sound.playMusic("sounds/bg_music.wav");
+		// initiates the game loop and displays the game itself
+		SOUND.play();
+		long timer=0;
+		int drawCount=0;
 		long oldTime = System.currentTimeMillis();
-		while(!component.asteroidCollision()) {
+		while(true) {
 			try {
 				long currentTime = System.currentTimeMillis();
 				long diff = currentTime - oldTime;
 				component.update(diff);
+				timer+=(currentTime-oldTime);
 				oldTime = currentTime;
 				frame.repaint();
 				Thread.sleep(DELAY);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}
+			drawCount++;
+			if(timer>=1000000000) {
+				System.out.println("FPS: " + drawCount);
+				drawCount=0;
+				timer=0;
+			}
 		}
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Program has been terminated.");
-		System.exit(0);
 	}
 }

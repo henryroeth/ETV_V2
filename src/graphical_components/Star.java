@@ -1,4 +1,4 @@
-package entities;
+package graphical_components;
 
 import java.awt.Color;
 import java.awt.Graphics;

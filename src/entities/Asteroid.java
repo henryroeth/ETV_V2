@@ -39,10 +39,11 @@ public class Asteroid {
 	}
 	
 	public void draw(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g; // recovers Graphics2D
+		// recovers Graphics2D
+		Graphics2D g2 = (Graphics2D) g; 
 		
+		// scales the instance of the image and draws it 
 		g2.drawImage(asteroid.getScaledInstance(width, height, Image.SCALE_DEFAULT), (int) x - width / 6, (int) y - height / 6, null);	
-		g2.draw(rect);
 	}
 	
 	public void update(long diff) {

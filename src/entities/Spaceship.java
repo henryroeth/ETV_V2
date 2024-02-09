@@ -13,7 +13,7 @@ import javax.swing.JComponent;
 
 import main.Main;
 
-public class Spaceship extends JComponent{
+public class Spaceship extends JComponent {
 	
 	private static final long serialVersionUID = 1L;
 	

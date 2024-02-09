@@ -12,7 +12,7 @@ public class Main {
 	
 	public static final String TITLE = "Escape The Void!";
 	
-	public static final Sound SOUND = new Sound("sounds/bg_music.wav");
+	public static final Sound MUSIC = new Sound("sounds/bg_music.wav");
 	
 	public static void main(String[] args) {
 		// initializes the frame 
@@ -31,27 +31,18 @@ public class Main {
 		frame.setVisible(true);
 		
 		// initiates the game loop and displays the game itself
-		SOUND.play();
-		long timer=0;
-		int drawCount=0;
+		MUSIC.play();
 		long oldTime = System.currentTimeMillis();
 		while(true) {
 			try {
 				long currentTime = System.currentTimeMillis();
 				long diff = currentTime - oldTime;
 				component.update(diff);
-				timer+=(currentTime-oldTime);
 				oldTime = currentTime;
 				frame.repaint();
 				Thread.sleep(DELAY);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
-			}
-			drawCount++;
-			if(timer>=1000000000) {
-				System.out.println("FPS: " + drawCount);
-				drawCount=0;
-				timer=0;
 			}
 		}
 	}

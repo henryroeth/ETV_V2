@@ -13,6 +13,7 @@ import javax.swing.Timer;
 
 import entities.Asteroid;
 import entities.Spaceship;
+import file_handling.Sound;
 import graphical_components.Overlay;
 import graphical_components.Portal;
 import graphical_components.Star;
@@ -23,6 +24,8 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	private static final long serialVersionUID = 1L;
 	
 	private Spaceship spaceship;
+	
+	private Sound COLLISION = new Sound("sounds/boom.wav");
 	
 	private final int SPACESHIP_SPEED = 2;
 	
@@ -47,12 +50,14 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	private Portal portal;
 	
 	private StartScreen startScreen;
+	
+	private Timer t = new Timer(10, this);
 
 	public Component() {
 		// initializes game state
 		isLooping = false;
+		
 		// sets up the spaceship 
-		Timer t = new Timer(10, this);
 		addKeyListener(this);
 		setFocusable(true);
 		spaceship = new Spaceship(34, 250);
@@ -143,6 +148,7 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		boolean collided = false;
 		for(int i = 0; i < asteroids.size(); i++) {
 			if(spaceship.getHitBox().intersects(asteroids.get(i).getHitBox())) {
+				t.stop();
 				collided = true;
 				System.out.println("Asteroid collision was detected!");
 			}
@@ -184,10 +190,10 @@ public class Component extends JComponent implements KeyListener, ActionListener
 			case KeyEvent.VK_ESCAPE:
 				if(!asteroidCollision() && isLooping) {
 					isLooping = false;
-					Main.SOUND.stop();
+					Main.MUSIC.stop();
 				} else {
 					isLooping = true;
-					Main.SOUND.play();
+					Main.MUSIC.play();
 				}
 		}
 	}

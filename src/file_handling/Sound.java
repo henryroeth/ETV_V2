@@ -40,6 +40,14 @@ public class Sound {
 		}
 	}
 	
+	public void playOnce() {
+		try {
+			clip.start();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void stop() {
 		clip.stop();
 	}

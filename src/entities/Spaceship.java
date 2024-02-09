@@ -19,6 +19,8 @@ public class Spaceship extends JComponent {
 	
 	private BufferedImage spaceship;
 	
+	private BufferedImage spaceship_collided;
+	
 	private int x;
 	
 	private int y;
@@ -33,12 +35,16 @@ public class Spaceship extends JComponent {
 	
 	private Rectangle2D.Double rect;
 	
+	private boolean hasCollided;
+	
 	public Spaceship(int x, int y) {
 		this.x = x;
 		this.y = y;
+		hasCollided = false;
 		rect = new Rectangle2D.Double(x, y, width / 2.1, height / 2.3);
 		try {
 			spaceship = ImageIO.read(new File("images/spaceship.png"));
+			spaceship_collided = ImageIO.read(new File("images/spaceship_collided.png"));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -48,8 +54,13 @@ public class Spaceship extends JComponent {
 		// recovers Graphics2D
 		Graphics2D g2 = (Graphics2D) g;
 		
-		// scales the the instance of the image and draws it
-		g2.drawImage(spaceship.getScaledInstance(width, height, Image.SCALE_DEFAULT), x - width / 3 + 5, y - height / 3 + 5, null);
+		// scales the instance of the spaceship image and draws it (alternating images with respect to it's state of collision 
+		if(!hasCollided) {
+			g2.drawImage(spaceship.getScaledInstance(width, height, Image.SCALE_DEFAULT), x - width / 3 + 5, y - height / 3 + 5, null);
+		} else {
+			g2.drawImage(spaceship_collided.getScaledInstance(width, height, Image.SCALE_DEFAULT), x - width / 3 + 5, y - height / 3 + 5, null);
+		}
+		
 	}
 	
 	public void update() {
@@ -103,4 +114,8 @@ public class Spaceship extends JComponent {
 	public int getY() {return y;}
 	
 	public Rectangle2D.Double getHitBox() {return rect;}
+	
+	public boolean hasCollided() {return hasCollided;}
+	
+	public void setCollisionState(boolean collisionState) {this.hasCollided = collisionState;}
 }

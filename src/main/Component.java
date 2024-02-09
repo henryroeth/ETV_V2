@@ -25,7 +25,7 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	
 	private Spaceship spaceship;
 	
-	private Sound COLLISION = new Sound("sounds/boom.wav");
+	private Sound collisionSound = new Sound();
 	
 	private final int SPACESHIP_SPEED = 2;
 	
@@ -34,6 +34,10 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	private final int ASTEROID_WIDTH = 123;
 	
 	private final int ASTEROID_HEIGHT = 113;
+	
+	private final int SPACESHIP_START_X = (Main.WINSIZE / 2) - 48;
+	
+	private final int SPACESHIP_START_Y = (Main.WINSIZE / 2) - 48;
 	
 	private boolean isLooping;
 	
@@ -60,8 +64,7 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		// sets up the spaceship 
 		addKeyListener(this);
 		setFocusable(true);
-		spaceship = new Spaceship(34, 250);
-		t.start();
+		spaceship = new Spaceship(SPACESHIP_START_X, SPACESHIP_START_Y);
 		
 		// creates the background
 		portal = new Portal(0, 0);
@@ -124,7 +127,24 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	}
 	
 	public void update(long diff) {
-		if(asteroidCollision()) isLooping = false;
+		if(asteroidCollision()) {
+			isLooping = false;
+			spaceship.setCollisionState(true);
+			collisionSound.playOnce("sounds/boom.wav");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			int xPos = (Main.WINSIZE * 2) + ASTEROID_WIDTH;
+			for(int i = 0; i < asteroids.size(); i++) {
+				asteroids.get(i).setX(xPos);
+				asteroids.get(i).setY((Math.random() * Main.WINSIZE - ASTEROID_HEIGHT) + ASTEROID_HEIGHT);
+			}
+			spaceship.setCollisionState(false);
+			spaceship.setX(SPACESHIP_START_X);
+			spaceship.setY(SPACESHIP_START_Y);
+		}
 		if(isLooping) {
 			// updates the location of the stars
 			for(int i = 0; i < stars.size(); i++) {
@@ -186,14 +206,23 @@ public class Component extends JComponent implements KeyListener, ActionListener
 				break;
 			case KeyEvent.VK_ENTER:
 				isLooping = true;
+				t.start();
 				break;
 			case KeyEvent.VK_ESCAPE:
 				if(!asteroidCollision() && isLooping) {
+					t.stop();
 					isLooping = false;
 					Main.MUSIC.stop();
 				} else {
+					t.start();
 					isLooping = true;
 					Main.MUSIC.play();
+				}
+				break;
+			case KeyEvent.VK_R:
+				if(!isLooping) {
+					t.start();
+					isLooping = true;
 				}
 		}
 	}

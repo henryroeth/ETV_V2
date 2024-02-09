@@ -31,6 +31,8 @@ public class Sound {
 		}
 	}
 	
+	public Sound() {}
+	
 	public void play() {
 		try {
 			clip.start();
@@ -40,8 +42,17 @@ public class Sound {
 		}
 	}
 	
-	public void playOnce() {
+	public void playOnce(String path) {
 		try {
+			this.path = new File(path);
+			if(this.path.exists()) {
+				this.path.setExecutable(true);
+				AudioInputStream audioInput=AudioSystem.getAudioInputStream(this.path);
+				clip=AudioSystem.getClip();
+				clip.open(audioInput);
+			} else {
+				System.out.println("Error!");
+			}
 			clip.start();
 		} catch(Exception e) {
 			e.printStackTrace();

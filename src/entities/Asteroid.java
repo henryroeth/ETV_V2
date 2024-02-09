@@ -55,7 +55,7 @@ public class Asteroid {
 	
 	public double getX() {return x;}
 	
-	public void setY(int y) {this.y = y; rect.y = y;}
+	public void setY(double y) {this.y = y; rect.y = y;}
 	
 	public double getY() {return y;}
 	

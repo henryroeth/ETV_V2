@@ -10,7 +10,7 @@ public class Main {
 	
 	public static final int WINSIZE = 1000;
 	
-	public static final String TITLE = "Escape The Void! (ETV 1.1)";
+	public static final String TITLE = "Escape The Void! (ETV 2.0)";
 	
 	public static final Sound MUSIC = new Sound("sounds/bg_music.wav");
 	

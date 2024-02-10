@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 
 public class ScoreHandler {
 
-    private static final String FILE_NAME = "resources/number.txt";
+    private static final String FILE_NAME = "files/score.txt";
 
     public static void saveNumberToFile(int number) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {

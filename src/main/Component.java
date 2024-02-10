@@ -17,7 +17,6 @@ import file_handling.Sound;
 import graphical_components.Overlay;
 import graphical_components.Portal;
 import graphical_components.Star;
-import graphical_components.StartScreen;
 
 public class Component extends JComponent implements KeyListener, ActionListener {
 	
@@ -41,6 +40,8 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	
 	private boolean isLooping;
 	
+	public static int timeAlive; // in milliseconds
+	
 	private ArrayList<Star> stars = new ArrayList<Star>();
 	
 	private ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
@@ -52,8 +53,6 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	private Overlay overlay;
 	
 	private Portal portal;
-	
-	private StartScreen startScreen;
 	
 	private Timer t = new Timer(10, this);
 
@@ -68,9 +67,6 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		
 		// creates the background
 		portal = new Portal(0, 0);
-		
-		// creates the start screen
-		startScreen = new StartScreen(0, 0);
 		
 		// procedurally initializes stars for a parallax effect to be implemented
 		int verticalCounter = -16;
@@ -112,21 +108,22 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		portal.draw(g2);
 		
 		// draws the spaceship
-		spaceship.draw(g2); 
+		if(!overlay.startState()) spaceship.draw(g2); 
 		
 		// draws all of the asteroids
 		for(int i = 0; i < asteroids.size(); i++) {
 			asteroids.get(i).draw(g2);
 		}
 		
-		// draws the start screen
-		startScreen.draw(g2);
-		
 		// draws the game overlay
 		overlay.draw(g2);
 	}
 	
 	public void update(long diff) {
+		// increments the number of milliseconds passed in the update
+		if(!overlay.startState() && !overlay.endState() && !overlay.pausedState()) timeAlive ++;
+		
+		// handles the game loop when the spaceship collides with an asteroid
 		if(asteroidCollision()) {
 			isLooping = false;
 			spaceship.setCollisionState(true);
@@ -141,19 +138,24 @@ public class Component extends JComponent implements KeyListener, ActionListener
 				asteroids.get(i).setX(xPos);
 				asteroids.get(i).setY((Math.random() * Main.WINSIZE - ASTEROID_HEIGHT) + ASTEROID_HEIGHT);
 			}
+			overlay.setEndState(true);
 			spaceship.setCollisionState(false);
 			spaceship.setX(SPACESHIP_START_X);
 			spaceship.setY(SPACESHIP_START_Y);
 		}
-		if(isLooping) {
-			// updates the location of the stars
+		
+		// updates the location of the stars
+		if(isLooping || overlay.startState() && !overlay.endState()) {
 			for(int i = 0; i < stars.size(); i++) {
 				stars.get(i).update(diff);
 				if(stars.get(i).getX() < -5) {
 					stars.get(i).setX(Main.WINSIZE + 5);
 				}
 			}
-			// updates the location of the asteroids
+		}
+		
+		// updates the location of the asteroids
+		if(isLooping) {
 			for(int i = 0; i < asteroids.size(); i++) {
 				asteroids.get(i).update(diff);
 				if(asteroids.get(i).getX() < -ASTEROID_WIDTH) {
@@ -205,25 +207,33 @@ public class Component extends JComponent implements KeyListener, ActionListener
 				if(isLooping) spaceship.setDx(SPACESHIP_SPEED);
 				break;
 			case KeyEvent.VK_ENTER:
-				isLooping = true;
-				t.start();
+				if(overlay.endState()) {
+					overlay.setEndState(false);
+					timeAlive = 0;
+					isLooping = true;
+					t.start();
+					
+				} else if(overlay.startState()) {
+					isLooping = true;
+					t.start();
+					overlay.setStartState(false);
+				}
 				break;
 			case KeyEvent.VK_ESCAPE:
-				if(!asteroidCollision() && isLooping) {
+				if(!asteroidCollision() && isLooping && !overlay.pausedState()) {
 					t.stop();
 					isLooping = false;
 					Main.MUSIC.stop();
-				} else {
+					overlay.setPausedState(true);
+				} else if(!overlay.startState() && overlay.pausedState()){
 					t.start();
 					isLooping = true;
 					Main.MUSIC.play();
+					overlay.setPausedState(false);
+				} else if(overlay.endState()) {
+					System.exit(0);
 				}
 				break;
-			case KeyEvent.VK_R:
-				if(!isLooping) {
-					t.start();
-					isLooping = true;
-				}
 		}
 	}
 

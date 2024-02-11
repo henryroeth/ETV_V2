@@ -76,10 +76,11 @@ public class Overlay {
 		
 		// overlay when paused
 		if(pausedState) {
-			g2.setFont(monospacedBold100);
-			g2.drawString(paused, x + (Main.WINSIZE + Main.WINSIZE / 2) - (paused.length() * 121), y + Main.WINSIZE / 2);
 			g2.setColor(pausedBC);
 			g2.fillRect(x, y, Main.WINSIZE, Main.WINSIZE);
+			g2.setFont(monospacedBold100);
+			g2.setColor(white);
+			g2.drawString(paused, x + (Main.WINSIZE + Main.WINSIZE / 2) - (paused.length() * 121), y + Main.WINSIZE / 2);
 		}
 		
 		// overlay when on the end screen

@@ -24,7 +24,7 @@ public class Component extends JComponent implements KeyListener, ActionListener
 	
 	private Spaceship spaceship;
 	
-	private Sound collisionSound = new Sound();
+	private Sound collisionSound = new Sound("sounds/boom.wav");
 	
 	private final int SPACESHIP_SPEED = 2;
 	
@@ -127,12 +127,13 @@ public class Component extends JComponent implements KeyListener, ActionListener
 		if(asteroidCollision()) {
 			isLooping = false;
 			spaceship.setCollisionState(true);
-			collisionSound.playOnce("sounds/boom.wav");
+			collisionSound.playOnce();
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			collisionSound.reset();
 			int xPos = (Main.WINSIZE * 2) + ASTEROID_WIDTH;
 			for(int i = 0; i < asteroids.size(); i++) {
 				asteroids.get(i).setX(xPos);

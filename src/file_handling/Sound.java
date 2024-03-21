@@ -31,8 +31,6 @@ public class Sound {
 		}
 	}
 	
-	public Sound() {}
-	
 	public void play() {
 		try {
 			clip.start();
@@ -42,24 +40,23 @@ public class Sound {
 		}
 	}
 	
-	public void playOnce(String path) {
+	public void playOnce() {
 		try {
-			this.path = new File(path);
 			if(this.path.exists()) {
-				this.path.setExecutable(true);
-				AudioInputStream audioInput=AudioSystem.getAudioInputStream(this.path);
-				clip=AudioSystem.getClip();
-				clip.open(audioInput);
+				clip.start();
 			} else {
 				System.out.println("Error!");
 			}
-			clip.start();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public void reset() {
+		clip.setMicrosecondPosition(0);
+	}
+	
 	public void stop() {
-		clip.stop();
+		clip.close();
 	}
 }

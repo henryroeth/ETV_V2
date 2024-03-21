@@ -60,7 +60,6 @@ public class Spaceship extends JComponent {
 		} else {
 			g2.drawImage(spaceship_collided.getScaledInstance(width, height, Image.SCALE_DEFAULT), x - width / 3 + 5, y - height / 3 + 5, null);
 		}
-		
 	}
 	
 	public void update() {
